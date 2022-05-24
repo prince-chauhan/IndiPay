@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "IndiPay",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/logo3.png",
     "version": "1.0.0",
-    "slug": "your-app-slug",
+    "slug": "IndiPay",
     "ios": {
       "bundleIdentifier": "com.cibermen.indipay",
       "buildNumber": "1.0.0"
