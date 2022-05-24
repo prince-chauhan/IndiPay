@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, Component } from 'react';
 import { Alert, TouchableOpacity, BackHandler, Image, View, Text, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-// import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,18 +12,19 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 
 
-// async function save(key, value) {
-//     await SecureStore.setItemAsync(key, value);
-// }
+async function save(key, value) {
+    await SecureStore.setItemAsync(key, value);
+}
 
-// async function getValueFor(key) {
-//     let result = await SecureStore.getItemAsync(key);
-//     if (result) {
-//         alert("🔐 Here's your value 🔐 \n" + result);
-//     } else {
-//         alert('No values stored under that key.');
-//     }
-// }
+async function getValueFor(key) {
+    let result = await SecureStore.getItemAsync(key);
+    if (result) {
+        alert('hi' + result)
+        return result
+    } else {
+        alert('null')
+    }
+}
 
 function Login({ navigation }) {
 
@@ -77,7 +78,13 @@ function Login({ navigation }) {
                 </View>
             </View>
             <View style={[{ padding: 40, marginTop: 40 }]}>
-                <TouchableOpacity onPress={() => navigation.push('Home')} >
+                <TouchableOpacity onPress={() => {
+                    var res;
+                    res = getValueFor('email');
+                    console.log(res)
+                    // Alert.alert(res)
+                    // navigation.push('Home')
+                }} >
                     <LinearGradient
                         // Background Linear Gradient
                         colors={['#130f40', '#000000']}
@@ -180,7 +187,19 @@ function SignUp({ navigation }) {
 
             </View>
             <View style={[{ padding: 40, marginTop: 20 }]}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')} >
+                <TouchableOpacity onPress={() => {
+                    Alert.alert(email, password);
+                    save('email', {
+                        'email': email,
+                        'password': password,
+                        'mobile': mobile,
+                        'name': name
+                    });
+                    // save('password', password);
+                    // save('email', email);
+                    // save('email', email);
+                    // navigation.navigate('Home')
+                }} >
                     <LinearGradient
                         // Background Linear Gradient
                         colors={['#130f40', '#000000']}
