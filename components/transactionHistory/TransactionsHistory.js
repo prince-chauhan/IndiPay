@@ -77,7 +77,7 @@ const Transaction = ((item, navigation) => {
             <View style={[{ flexDirection: 'column', flex: 1.2, marginLeft: 18 }]}>
                 <Text style={[{ fontSize: 16, fontFamily: 'ubuntu', flex: 1 }]}>{item.client.substring(0, 20)}</Text>
                 <Text style={[{ fontSize: 12, fontFamily: 'ubuntu-light', flex: 0.8 }]}>{item.date}</Text>
-                <Text style={[{ fontSize: 14, fontFamily: 'ubuntu-light', flex: 0.8 }]}>Txn. ID : UI89273F980</Text>
+                <Text style={[{ fontSize: 14, fontFamily: 'ubuntu-light', flex: 0.8 }]}>Txn. ID : {item.transId}</Text>
             </View>
 
             <Text style={[{ color: (item.amount < 0 ? 'red' : 'green'), fontFamily: 'ubuntu', fontSize: 15, flex: 1, marginTop: 'auto', marginBottom: 'auto', textAlign: 'right', fontWeight: '500' }]}>

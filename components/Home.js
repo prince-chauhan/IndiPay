@@ -401,7 +401,7 @@ class Transactionslist extends Component {
 
 const Stack = createNativeStackNavigator();
 
-function App() {
+function App({ navigation }) {
     const ref = React.useRef(null);
 
     let [customFonts] = useFonts({
@@ -416,7 +416,7 @@ function App() {
         return null;
     }
     return (
-        <NavigationContainer ref={ref}>
+        <NavigationContainer ref={ref} independent={true}>
             <Stack.Navigator initialRouteName="Home">
                 <Stack.Screen
                     name="Home"

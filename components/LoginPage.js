@@ -1,83 +1,391 @@
 import React, { useRef, useEffect, Component } from 'react';
-import { Alert, TouchableOpacity, Image, View, Text, StyleSheet } from 'react-native';
+import { Alert, TouchableOpacity, BackHandler, Image, View, Text, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import Loginnew from './Home';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
+// import * as SecureStore from 'expo-secure-store';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Link, NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
-import MainApp from './Home';
 import App from './Home';
+import TransactionDetails from './transactionHistory/TransactionsHistory';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { TextInput } from 'react-native-gesture-handler';
 
 
-class Login extends Component {
+// async function save(key, value) {
+//     await SecureStore.setItemAsync(key, value);
+// }
 
-    render() {
-        return (
-            <View style={styles.background}>
+// async function getValueFor(key) {
+//     let result = await SecureStore.getItemAsync(key);
+//     if (result) {
+//         alert("🔐 Here's your value 🔐 \n" + result);
+//     } else {
+//         alert('No values stored under that key.');
+//     }
+// }
 
+function Login({ navigation }) {
 
-                <View style={styles.slider}>
-                    <Image style={[styles.image]} source={require('../assets/logo.png')} />
-                    <Text style={[styles.text, styles.heading]}>Hi This is a heading</Text>
-                    <Text style={[styles.text, styles.normal]}>Hi This is normal text, which will be s dsf dfg dfdhown here</Text>
+    const backAction = () => {
+        Alert.alert("Hold on!", "Are you sure you want to exit?", [
+            {
+                text: "Cancel",
+                onPress: () => null,
+                style: "cancel"
+            },
+            { text: "YES", onPress: () => BackHandler.exitApp() }
+        ]);
+        return true;
+    };
 
+    const [email, onChangeEmail] = React.useState('');
+
+    const [password, onChangePassword] = React.useState('');
+    return (
+        <View style={[styles.background, { padding: 20 }]}>
+            <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
+
+                <View style={[{
+                    position: 'absolute', width: '100%'
+                }]}>
+                    <Image source={require('../assets/img/logo3.png')} style={[{ height: 70, marginTop: -20, marginBottom: 'auto', maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto', }]} resizeMode='contain' />
                 </View>
-                <View style={styles.inlinebutton}>
-                    <TouchableOpacity style={[styles.signinbutton, styles.button]} onPress={() => this.props.navigation.push('LoginButton')}><Text style={[styles.buttontext, {
-                        color: '#4a4eed'
-                    }]}> Log In</Text></TouchableOpacity>
-                    <TouchableOpacity style={[styles.signupbutton, styles.button]} onPress={() => Alert.alert('Simple  pressed', 'hi its me')}>
-                        <Text style={[styles.buttontext, {
-                            color: 'white'
-                        }]}>Sign Up</Text></TouchableOpacity>
-                </View>
+                <TouchableOpacity onPress={() => backAction()} >
+                    <View style={[{ borderColor: '#000000', borderWidth: 1, padding: 6, maxWidth: 40, maxHeight: 40, borderRadius: 8, }]}>
+                        <MaterialCommunityIcons color='black' name='keyboard-backspace' size={25} />
+                    </View>
+                </TouchableOpacity>
 
             </View>
-        );
-    }
+            <View style={[{ padding: 20, marginTop: 50, }]}>
+
+                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 40, marginTop: 5 }]}>Login</Text>
+            </View>
+            <View style={[{ padding: 20 }]}>
+
+                <Text style={[{ color: (email.length > 0 ? 'black' : 'transparent') }]}>Email </Text>
+                <TextInput placeholder='Email' keyboardType='email-address' placeholderTextColor='black' value={email} onChangeText={email => onChangeEmail(email)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+
+                <Text style={[{ color: (password.length > 0 ? 'black' : 'transparent'), marginTop: 20 }]}>Password </Text>
+                <TextInput placeholder='Password' secureTextEntry={true} placeholderTextColor='black' value={password} onChangeText={password => onChangePassword(password)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+
+                <View style={[{ flexDirection: 'row', marginTop: 20 }]}>
+
+                    <TouchableOpacity onPress={() => navigation.navigate('ForgotPass')}><Text style={[{ fontFamily: 'ubuntu-med', fontSize: 15, color: '#0b58e5', textAlign: 'center' }]}>Forgot Password?</Text></TouchableOpacity>
+
+                </View>
+            </View>
+            <View style={[{ padding: 40, marginTop: 40 }]}>
+                <TouchableOpacity onPress={() => navigation.push('Home')} >
+                    <LinearGradient
+                        // Background Linear Gradient
+                        colors={['#130f40', '#000000']}
+                        style={[{
+                            position: 'absolute',
+                            left: 0,
+                            // width: 47,
+                            height: 51,
+                            borderRadius: 8,
+                            right: 0,
+                        }]}
+                    />
+                    <Text style={[styles.buttontext, {
+                        color: 'white'
+                    }]}> Log In</Text></TouchableOpacity>
+
+
+            </View>
+
+            <View style={[{ paddingLeft: 40, flexDirection: 'row', paddingRight: 40, }]}>
+                <View style={[{ flex: 1, marginTop: 'auto', marginBottom: 'auto', backgroundColor: 'black', height: 2 }]}></View>
+                <Text style={[{ flex: 0.5, fontFamily: 'ubuntu-bold', fontSize: 15, textAlign: 'center' }]}>OR</Text>
+                <View style={[{ flex: 1, backgroundColor: 'black', height: 2, marginTop: 'auto', marginBottom: 'auto', }]}></View>
+            </View>
+
+            <View style={[{ padding: 40 }]}>
+                {/* <Text style={[{ fontFamily: 'ubuntu-med', fontSize: 15, color: 'black', textAlign: 'center' }]}>Don't have an account?</Text> */}
+                <TouchableOpacity onPress={() => navigation.push('SignUp')} style={[{ marginTop: 0 }]}>
+                    <LinearGradient
+                        // Background Linear Gradient
+                        colors={['#130f40', '#000000']}
+                        style={[{
+                            position: 'absolute',
+                            left: 0,
+                            // width: 47,
+                            height: 51,
+                            borderRadius: 8,
+                            right: 0,
+                        }]}
+                    />
+                    <Text style={[styles.buttontext, {
+                        color: 'white'
+                    }]}> Register</Text></TouchableOpacity>
+
+
+            </View>
+
+
+
+
+
+        </View>
+    );
+}
+
+function SignUp({ navigation }) {
+
+    const [email, onChangeEmail] = React.useState('');
+    const [name, onChangeName] = React.useState('');
+    const [mobile, onChangeMobile] = React.useState('');
+
+    const [password, onChangePassword] = React.useState('');
+
+    const [cnfmpassword, onChangecnfmPassword] = React.useState('');
+    return (
+        <View style={[styles.background, { padding: 20 }]}>
+            <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
+                <View style={[{
+                    position: 'absolute', width: '100%'
+                }]}>
+                    <Image source={require('../assets/img/logo3.png')} style={[{ height: 70, marginTop: -20, marginBottom: 'auto', maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto', }]} resizeMode='contain' />
+                </View>
+                <TouchableOpacity onPress={() => navigation.goBack()} >
+                    <View style={[{ borderColor: '#000000', borderWidth: 1, padding: 6, maxWidth: 40, maxHeight: 40, borderRadius: 8, }]}>
+                        <MaterialCommunityIcons color='black' name='keyboard-backspace' size={25} />
+                    </View>
+                </TouchableOpacity>
+
+            </View>
+            <View style={[{ padding: 20, marginTop: 40, }]}>
+
+                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 40, marginTop: 5 }]}>Register</Text>
+            </View>
+            <View style={[{ padding: 20 }]}>
+
+                <Text style={[{ color: (name.length > 0 ? 'black' : 'transparent') }]}>Name </Text>
+                <TextInput placeholder='Name' keyboardType='default' placeholderTextColor='black' value={name} onChangeText={name => onChangeName(name)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+
+                <Text style={[{ color: (mobile.length > 0 ? 'black' : 'transparent'), marginTop: 10 }]}>Mobile Number </Text>
+                <TextInput placeholder='Mobile' maxLength={10} keyboardType='number-pad' placeholderTextColor='black' value={mobile} onChangeText={mobile => onChangeMobile(mobile)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+
+                <Text style={[{ color: (email.length > 0 ? 'black' : 'transparent'), marginTop: 10 }]}>Email </Text>
+                <TextInput placeholder='Email' keyboardType='email-address' placeholderTextColor='black' value={email} onChangeText={email => onChangeEmail(email)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+
+                <Text style={[{ color: (password.length > 0 ? 'black' : 'transparent'), marginTop: 10 }]}>Password </Text>
+                <TextInput placeholder='Password' secureTextEntry={true} placeholderTextColor='black' value={password} onChangeText={password => onChangePassword(password)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+
+                <Text style={[{ color: (cnfmpassword.length > 0 ? 'black' : 'transparent'), marginTop: 10 }]}>Confirm Password </Text>
+                <TextInput placeholder='Confirm Password' secureTextEntry={true} placeholderTextColor='black' value={cnfmpassword} onChangeText={cnfmpassword => onChangecnfmPassword(cnfmpassword)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+
+            </View>
+            <View style={[{ padding: 40, marginTop: 20 }]}>
+                <TouchableOpacity onPress={() => navigation.navigate('Home')} >
+                    <LinearGradient
+                        // Background Linear Gradient
+                        colors={['#130f40', '#000000']}
+                        style={[{
+                            position: 'absolute',
+                            left: 0,
+                            // width: 47,
+                            height: 51,
+                            borderRadius: 8,
+                            right: 0,
+                        }]}
+                    />
+                    <Text style={[styles.buttontext, {
+                        color: 'white'
+                    }]}> Register</Text></TouchableOpacity>
+
+
+            </View>
+
+        </View>
+    );
 }
 
 
-// const [loaded] = useFonts({
-//     Proxima: require('../assets/fonts/Proxima.ttf'),
-//   });
+function ForgetPassword({ navigation }) {
 
-const AppNavigator = createStackNavigator(
-    {
-        LoginScreen: {
-            screen: Login,
-            navigationOptions: {
-                headerShown: false,
-            }
-        },
-        LoginButton: {
+    const [email, onChangeEmail] = React.useState('');
 
-            screen: App,
-            navigationOptions: {
-                headerShown: false,
-            }
-        },
-        SignupButton: {
-            screen: Loginnew,
-            navigationOptions: {
-                headerShown: false,
-            }
-        }
-    },
+    return (
+        <View style={[styles.background, { padding: 20 }]}>
+            <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
+                <View style={[{
+                    position: 'absolute', width: '100%'
+                }]}>
+                    <Image source={require('../assets/img/logo3.png')} style={[{ height: 70, marginTop: -20, marginBottom: 'auto', maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto', }]} resizeMode='contain' />
+                </View>
+                <TouchableOpacity onPress={() => navigation.goBack()} >
+                    <View style={[{ borderColor: '#000000', borderWidth: 1, padding: 6, maxWidth: 40, maxHeight: 40, borderRadius: 8, }]}>
+                        <MaterialCommunityIcons color='black' name='keyboard-backspace' size={25} />
+                    </View>
+                </TouchableOpacity>
+
+            </View>
+            <View style={[{ padding: 20, marginTop: 40, }]}>
+
+                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 40, marginTop: 5 }]}>Forget Password</Text>
+            </View>
+            <View style={[{ padding: 20 }]}>
 
 
-);
+                <Text style={[{ color: (email.length > 0 ? 'black' : 'transparent'), marginTop: 10 }]}>Email </Text>
+                <TextInput placeholder='Email' keyboardType='email-address' placeholderTextColor='black' value={email} onChangeText={email => onChangeEmail(email)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
 
-const AppContainer = createAppContainer(AppNavigator);
-export default class Log extends React.Component {
-    render() {
-        return (
-            <AppContainer />
 
-        )
-            ;
-    }
+            </View>
+            <View style={[{ padding: 40, marginTop: 20 }]}>
+                <TouchableOpacity onPress={() => navigation.navigate('LinkSent', { email })} >
+                    <LinearGradient
+                        // Background Linear Gradient
+                        colors={['#130f40', '#000000']}
+                        style={[{
+                            position: 'absolute',
+                            left: 0,
+                            // width: 47,
+                            height: 51,
+                            borderRadius: 8,
+                            right: 0,
+                        }]}
+                    />
+                    <Text style={[styles.buttontext, {
+                        color: 'white'
+                    }]}> Reset Password</Text></TouchableOpacity>
+
+
+            </View>
+
+        </View>
+    );
 }
+
+
+function LinkSent({ navigation, route }) {
+
+    const email = route.params.email;
+    return (
+        <View style={[styles.background, { padding: 20 }]}>
+            <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
+                <View style={[{
+                    position: 'absolute', width: '100%'
+                }]}>
+                    <Image source={require('../assets/img/logo3.png')} style={[{ height: 70, marginTop: -20, marginBottom: 'auto', maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto', }]} resizeMode='contain' />
+                </View>
+                <TouchableOpacity onPress={() => navigation.goBack()} >
+                    <View style={[{ borderColor: '#000000', borderWidth: 1, padding: 6, maxWidth: 40, maxHeight: 40, borderRadius: 8, }]}>
+                        <MaterialCommunityIcons color='black' name='keyboard-backspace' size={25} />
+                    </View>
+                </TouchableOpacity>
+
+            </View>
+            <View style={[{ padding: 20, marginLeft: 20, marginRight: 20, marginTop: 80, borderWidth: 1, borderRadius: 8 }]}>
+
+                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 22, marginTop: 5 }]}>Check your inbox</Text>
+                <View style={[{}]}>
+                    <Text style={[{ color: 'black', fontFamily: 'ubuntu', textAlign: 'center', fontSize: 18, marginTop: 20 }]}>We have successfully sent an email with a temporary reset password link to your registered mail
+
+                        <Text style={[{ color: 'black', fontFamily: 'ubuntu-bold', textAlign: 'center', fontSize: 18, }]}> {email.substring(0, 5)}xxxx{email.substring((email.indexOf('@')), email.length)}</Text>
+
+                        <Text style={[{ color: 'black', fontFamily: 'ubuntu', textAlign: 'center', fontSize: 18, }]}>. The link will be expired after 4 hours.</Text></Text>
+
+                </View>
+            </View>
+            <View style={[{ padding: 40, marginTop: 20 }]}>
+                <TouchableOpacity onPress={() => navigation.navigate('Home')} >
+                    <LinearGradient
+                        // Background Linear Gradient
+                        colors={['#130f40', '#000000']}
+                        style={[{
+                            position: 'absolute',
+                            left: 0,
+                            // width: 47,
+                            height: 51,
+                            borderRadius: 8,
+                            right: 0,
+                        }]}
+                    />
+                    <Text style={[styles.buttontext, {
+                        color: 'white'
+                    }]}> Go Back To Login</Text></TouchableOpacity>
+
+
+            </View>
+
+        </View>
+    );
+}
+
+const Stack = createNativeStackNavigator();
+
+
+function LoginApp() {
+    const ref = React.useRef(null);
+
+    let [customFonts] = useFonts({
+        'Ocrb': require('../assets/fonts/OCRB-Medium.ttf'),
+        'ubuntu': require('../assets/fonts/Ubuntu-Regular.ttf'),
+        'ubuntu-med': require('../assets/fonts/Ubuntu-Medium.ttf'),
+        'ubuntu-bold': require('../assets/fonts/Ubuntu-Bold.ttf'),
+        'ubuntu-light': require('../assets/fonts/Ubuntu-Light.ttf'),
+    });
+
+    if (!customFonts) {
+        return null;
+    }
+    return (
+        <NavigationContainer ref={ref} independent={true}>
+            <Stack.Navigator initialRouteName="LoginScreen">
+                <Stack.Screen
+                    name="LoginScreen"
+                    component={Login}
+                    options={{
+                        headerShown: false
+                    }}
+
+                />
+                <Stack.Screen
+                    name="Home"
+                    component={App}
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="SignUp"
+                    component={SignUp}
+                    options={{
+                        headerShown: false,
+                        // presentation: 'transparentModal'
+                    }}
+                />
+                <Stack.Screen
+                    name="ForgotPass"
+                    component={ForgetPassword}
+                    options={{
+                        headerShown: false,
+                        // presentation: 'transparentModal'
+                    }}
+                />
+
+                <Stack.Screen
+                    name="LinkSent"
+                    component={LinkSent}
+                    options={{
+                        headerShown: false,
+                        // presentation: 'transparentModal'
+                    }}
+                    initialParams={{ email: '42' }}
+                />
+
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+}
+
+export default LoginApp;
+
 
 const styles = StyleSheet.create({
     image: {
@@ -89,8 +397,7 @@ const styles = StyleSheet.create({
         // marginBottom:'auto',
     },
     background: {
-        backgroundColor: '#4a4eed',
-        padding: '5%',
+        backgroundColor: 'white',
         height: '100%',
         flexDirection: 'column',
     },
@@ -132,7 +439,7 @@ const styles = StyleSheet.create({
 
     },
     button: {
-        borderRadius: 22,
+        borderRadius: 8,
         flex: 1,
         maxHeight: 50,
 
