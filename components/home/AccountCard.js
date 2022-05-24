@@ -6,7 +6,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Font from 'expo-font';
 
 let customFonts = {
-    'Ocrb': require('../../assets/fonts/OCRB-Medium.ttf'),
     'ubuntu': require('../../assets/fonts/Ubuntu-Regular.ttf'),
     'ubuntu-med': require('../../assets/fonts/Ubuntu-Medium.ttf'),
     'ubuntu-bold': require('../../assets/fonts/Ubuntu-Bold.ttf'),

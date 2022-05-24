@@ -7,7 +7,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 
 let customFonts = {
-    'Ocrb': require('../../assets/fonts/OCRB-Medium.ttf'),
     'ubuntu-light': require('../../assets/fonts/Ubuntu-Light.ttf'),
     'ubuntu': require('../../assets/fonts/Ubuntu-Regular.ttf'),
     'ubuntu-med': require('../../assets/fonts/Ubuntu-Medium.ttf'),
