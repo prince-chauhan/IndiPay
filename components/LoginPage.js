@@ -343,7 +343,7 @@ function LoginApp() {
     const ref = React.useRef(null);
 
     let [customFonts] = useFonts({
-        'Ocrb': require('../assets/fonts/OCRB-Medium.ttf'),
+
         'ubuntu': require('../assets/fonts/Ubuntu-Regular.ttf'),
         'ubuntu-med': require('../assets/fonts/Ubuntu-Medium.ttf'),
         'ubuntu-bold': require('../assets/fonts/Ubuntu-Bold.ttf'),
