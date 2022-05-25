@@ -55,3 +55,4 @@ buck-out/
 web-build/
 dist/
 server/.env
+server/.env
