@@ -54,7 +54,7 @@ class SendToBank extends Component {
 
         return (
             <ScrollView style={[styles.background]}>
-                <View style={[{ backgroundColor: 'white', marginLeft: 10, marginTop: 10, marginRight: 10, paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 18, borderRadius: 10, marginBottom: 40, elevation: 4 }]}>
+                <View style={[{ backgroundColor: 'white', paddingLeft: 10, paddingRight: 10, paddingBottom: 20, paddingTop: 18, borderRadius: 10, marginBottom: 40, elevation: 4 }]}>
                     <Text style={[{ fontFamily: 'ubuntu-med', fontSize: 22, marginBottom: 15, textAlign: 'center' }]}>
                         Transfer Money To Bank
                     </Text>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ecf3ff',
         height: '100%',
         flexDirection: 'column',
-        padding: 5
+        padding: 10
     },
     input: {
         backgroundColor: 'white',

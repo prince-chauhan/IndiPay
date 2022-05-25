@@ -144,6 +144,10 @@ function SignUp({ navigation }) {
     const [password, onChangePassword] = React.useState('');
 
     const [cnfmpassword, onChangecnfmPassword] = React.useState('');
+
+    const submitData = () => {
+
+    }
     return (
         <View style={[styles.background, { padding: 20 }]}>
             <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
