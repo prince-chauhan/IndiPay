@@ -105,7 +105,7 @@ function HomeScreen({ navigation }) {
                 }]} source={require('../assets/img/user/user.png')} />
             </View>
             <View style={[{ flex: 1 }]}>
-                <AccountCard></AccountCard>
+                {/* <AccountCard></AccountCard> */}
             </View>
             <View style={[{ flex: 1 }]}>
                 <View>

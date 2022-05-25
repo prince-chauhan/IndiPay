@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Font from 'expo-font';
 
 let customFonts = {
+    'Ocrb': require('../../assets/fonts/OcrB2.ttf'),
     'ubuntu': require('../../assets/fonts/Ubuntu-Regular.ttf'),
     'ubuntu-med': require('../../assets/fonts/Ubuntu-Medium.ttf'),
     'ubuntu-bold': require('../../assets/fonts/Ubuntu-Bold.ttf'),
@@ -92,7 +93,8 @@ const styles = StyleSheet.create({
     },
     cardnumber: {
         marginTop: 40,
-        fontSize: 25,
+        fontSize: 28,
+        // textAlign: 'justify',
         marginBottom: 15,
         textAlign: 'left',
         fontFamily: 'Ocrb',

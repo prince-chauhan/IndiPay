@@ -19,10 +19,9 @@ async function save(key, value) {
 async function getValueFor(key) {
     let result = await SecureStore.getItemAsync(key);
     if (result) {
-        alert('hi' + result)
         return result
     } else {
-        alert('null')
+        return null
     }
 }
 
@@ -79,11 +78,7 @@ function Login({ navigation }) {
             </View>
             <View style={[{ padding: 40, marginTop: 40 }]}>
                 <TouchableOpacity onPress={() => {
-                    var res;
-                    res = getValueFor('email');
-                    console.log(res)
-                    // Alert.alert(res)
-                    // navigation.push('Home')
+                    navigation.push('Home')
                 }} >
                     <LinearGradient
                         // Background Linear Gradient
