@@ -45,6 +45,21 @@ app.get('/', (req, res) => {
 })
 
 
+app.get('/login', (req, res) => {
+    User.find({
+        "email": req.body.email,
+        "password": req.body.password
+    })
+        .then(data => {
+            res.send(data)
+            console.log(data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+})
+
+
 
 app.post('/send-data', (req, res) => {
     const user = new User({
@@ -53,6 +68,7 @@ app.post('/send-data', (req, res) => {
         phone: req.body.phone,
         profilePic: req.body.profile_pic,
         pan: req.body.pan,
+        password: req.body.password,
         aadhar: req.body.aadhar
     })
     console.log(req.body)
