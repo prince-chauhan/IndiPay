@@ -197,7 +197,6 @@ function SignUp({ navigation }) {
     }
     return (
         <View style={[styles.background, { padding: 20 }]}>
-            <View></View>
             <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
                 <View style={[{
                     position: 'absolute', width: '100%'
