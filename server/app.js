@@ -6,7 +6,7 @@ require('dotenv').config()
 require('./User')
 const crypto = require("crypto");
 const User = mongoose.model('user')
-
+const csprng = require('csprng');
 const mongoUri = process.env.MONGO_URI;
 
 
@@ -47,14 +47,30 @@ app.get('/', (req, res) => {
 
 app.get('/login', (req, res) => {
     User.find({
-        "email": req.body.email,
-        "password": req.body.password
+        "email": req.body.email
     })
         .then(data => {
-            res.send(data)
             console.log(data)
+            if (data.length > 0) {
+
+                let hashedpass = data[0].password;
+                const salt = data[0].salt;
+                if (!req.body.password) {
+                    res.send("Threre was no password with this request")
+                }
+
+                const hashedpassquery = hash(`${salt}${req.body.password}`);
+                if (hashedpass == hashedpassquery) {
+                    res.send(data[0]);
+                }
+                else {
+                    res.send('Either email or pass is wrong');
+                }
+
+            }
         })
         .catch(err => {
+            res.send({ response: 'An error occured in getting the user info' });
             console.log(err)
         })
 })
@@ -62,6 +78,8 @@ app.get('/login', (req, res) => {
 
 
 app.post('/send-data', (req, res) => {
+    const salt = csprng(160, 36);
+    req.body.password = hash(`${salt}${req.body.password}`);
     const user = new User({
         name: req.body.name,
         email: req.body.email,
@@ -69,7 +87,8 @@ app.post('/send-data', (req, res) => {
         profilePic: req.body.profile_pic,
         pan: req.body.pan,
         password: req.body.password,
-        aadhar: req.body.aadhar
+        aadhar: req.body.aadhar,
+        salt
     })
     console.log(req.body)
     user.save()
