@@ -7,11 +7,11 @@ import { Link, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
 import App from './Home';
-import TransactionDetails from './transactionHistory/TransactionsHistory';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 
 
+const server = process.env.server;
 async function save(key, value) {
     await SecureStore.setItemAsync(key, value);
 }
@@ -42,6 +42,29 @@ function Login({ navigation }) {
     const [email, onChangeEmail] = React.useState('');
 
     const [password, onChangePassword] = React.useState('');
+
+    const submitData = () => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "password": password,
+            "email": email,
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("http://" + server + ":3000/send-data", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+    }
+
     return (
         <View style={[styles.background, { padding: 20 }]}>
             <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
@@ -60,7 +83,7 @@ function Login({ navigation }) {
             </View>
             <View style={[{ padding: 20, marginTop: 50, }]}>
 
-                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 40, marginTop: 5 }]}>Login</Text>
+                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 40, marginTop: 5 }]}>{server}</Text>
             </View>
             <View style={[{ padding: 20 }]}>
 
@@ -146,7 +169,30 @@ function SignUp({ navigation }) {
     const [cnfmpassword, onChangecnfmPassword] = React.useState('');
 
     const submitData = () => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
 
+        var raw = JSON.stringify({
+            "name": name,
+            "email": email,
+            "phone": mobile,
+            "profilePic": "abc.png",
+            "password": password,
+            "pan": "ABC4575SDG",
+            "aadhar": "46191256318"
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("http://43.204.71.211:3000/send-data", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
     }
     return (
         <View style={[styles.background, { padding: 20 }]}>
@@ -187,13 +233,8 @@ function SignUp({ navigation }) {
             </View>
             <View style={[{ padding: 40, marginTop: 20 }]}>
                 <TouchableOpacity onPress={() => {
-                    Alert.alert(email, password);
-                    save('email', {
-                        'email': email,
-                        'password': password,
-                        'mobile': mobile,
-                        'name': name
-                    });
+                    submitData()
+
                     // save('password', password);
                     // save('email', email);
                     // save('email', email);
