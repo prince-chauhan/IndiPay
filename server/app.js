@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 require('dotenv').config()
 require('./User')
-
+const crypto = require("crypto");
 const User = mongoose.model('user')
 
 const mongoUri = process.env.MONGO_URI;
@@ -109,3 +109,10 @@ app.post('/update', (req, res) => {
             console.log(err)
         })
 })
+
+function hash(pwd) {
+    return crypto
+        .createHash("sha256")
+        .update(pwd)
+        .digest("base64");
+}
