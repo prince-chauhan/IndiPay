@@ -182,6 +182,7 @@ function SignUp({ navigation }) {
             "aadhar": "46191256318"
         });
 
+
         var requestOptions = {
             method: 'POST',
             headers: myHeaders,
