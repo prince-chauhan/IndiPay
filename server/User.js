@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const UserSchema = new mongoose.Schema({
+const CreateAccountSchema = new mongoose.Schema({
     name: String,
     email: String,
     phone: String,
@@ -11,4 +11,4 @@ const UserSchema = new mongoose.Schema({
     salt: String
 })
 
-mongoose.model('user', UserSchema)
+mongoose.model('createAccount', CreateAccountSchema)

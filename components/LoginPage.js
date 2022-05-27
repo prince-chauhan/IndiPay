@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, Component } from 'react';
-import { Alert, TouchableOpacity, BackHandler, Image, View, Text, StyleSheet } from 'react-native';
+import React, { useRef, useState, useEffect, Component } from 'react';
+import { Alert, TouchableOpacity, Modal, BackHandler, Image, View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -25,6 +25,7 @@ async function getValueFor(key) {
     }
 }
 
+
 function Login({ navigation }) {
 
     const backAction = () => {
@@ -39,17 +40,22 @@ function Login({ navigation }) {
         return true;
     };
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [message, setmessage] = useState('Error');
+    const [button, setbutton] = useState('OK');
+    const [title, settitle] = useState('Error');
+
     const [email, onChangeEmail] = React.useState('');
 
     const [password, onChangePassword] = React.useState('');
 
-    const submitData = () => {
+    const loginUser = () => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
-            "password": password,
             "email": email,
+            "password": password
         });
 
         var requestOptions = {
@@ -59,14 +65,111 @@ function Login({ navigation }) {
             redirect: 'follow'
         };
 
-        fetch("http://" + server + ":3000/send-data", requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
+        fetch("http://43.204.71.211:3000/login", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.code == 200) {
+                    setmessage('Email id and password matched');
+                    settitle('Logged In');
+                    setbutton('Home');
+                    setModalVisible(!modalVisible)
+                    console.log(result.data.name)
+                }
+                else if (result.code == 401) {
+                    setmessage(result.message);
+                    settitle('Request Failed');
+                    setbutton('Cancel');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+                else if (result.code == 402) {
+                    setmessage(result.message);
+                    settitle('Invalid Credentials');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+                else if (result.code == 409) {
+                    setmessage(result.message);
+                    settitle('Network Error');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+                else {
+                    setmessage('Unknown Error! Please try again later');
+                    settitle('Error');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+            })
             .catch(error => console.log('error', error));
     }
 
     return (
-        <View style={[styles.background, { padding: 20 }]}>
+        <ScrollView style={[styles.background, { padding: 20 }]}>
+            <Modal
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={[{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    // marginTop: 22
+                }]}>
+                    <View style={[{
+                        // margin: 20,
+                        backgroundColor: 'white',
+                        borderRadius: 8,
+                        padding: 20,
+                        alignItems: "center",
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2
+                        },
+                        width: '80%',
+                        shadowOpacity: 0.25,
+                        shadowRadius: 4,
+                        elevation: 5
+                    }]}>
+                        <Text style={[{ fontFamily: 'ubuntu-med', fontSize: 20 }]}>{title}</Text>
+                        <Text style={[{ fontFamily: 'ubuntu', fontSize: 15, marginTop: 20, marginBottom: 15 }]}>{message}</Text>
+                        <TouchableOpacity
+                            style={[{
+                                borderRadius: 8,
+                                padding: 10,
+                                width: 100,
+                                marginTop: 15,
+                                elevation: 2
+                            }]}
+                            onPress={() => setModalVisible(!modalVisible)}
+                        >
+                            <LinearGradient
+                                // Background Linear Gradient
+                                colors={['#130f40', '#000000']}
+                                style={[{
+                                    position: 'absolute',
+                                    left: 0,
+                                    // width: 47,
+                                    height: 40,
+                                    width: 100,
+                                    borderRadius: 8,
+                                    right: 0,
+                                }]}
+                            />
+                            <Text style={[{ color: 'white', fontFamily: 'ubuntu-med', fontSize: 17, textAlign: 'center' }]}>{button}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+            </Modal>
             <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
 
                 <View style={[{
@@ -83,7 +186,7 @@ function Login({ navigation }) {
             </View>
             <View style={[{ padding: 20, marginTop: 50, }]}>
 
-                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 40, marginTop: 5 }]}>{server}</Text>
+                <Text style={[{ color: 'black', textAlign: 'center', fontFamily: 'ubuntu-bold', fontSize: 40, marginTop: 5 }]}>Login</Text>
             </View>
             <View style={[{ padding: 20 }]}>
 
@@ -101,7 +204,7 @@ function Login({ navigation }) {
             </View>
             <View style={[{ padding: 40, marginTop: 40 }]}>
                 <TouchableOpacity onPress={() => {
-                    navigation.push('Home')
+                    loginUser()
                 }} >
                     <LinearGradient
                         // Background Linear Gradient
@@ -154,16 +257,20 @@ function Login({ navigation }) {
 
 
 
-        </View>
+        </ScrollView>
     );
 }
 
 function SignUp({ navigation }) {
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [message, setmessage] = useState('Error');
+    const [button, setbutton] = useState('OK');
+    const [title, settitle] = useState('Error');
     const [email, onChangeEmail] = React.useState('');
     const [name, onChangeName] = React.useState('');
     const [mobile, onChangeMobile] = React.useState('');
-
+    const [submit, setSubmit] = React.useState(0);
     const [password, onChangePassword] = React.useState('');
 
     const [cnfmpassword, onChangecnfmPassword] = React.useState('');
@@ -191,12 +298,104 @@ function SignUp({ navigation }) {
         };
 
         fetch("http://43.204.71.211:3000/send-data", requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .catch(error => console.log('error', error));
+            .then(response => response.json())
+            .then(result => {
+                if (result.code == 200) {
+                    setmessage(result.message);
+                    settitle('Congratulations');
+                    setbutton('PROCEED');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+
+                }
+                else if (result.code == 409) {
+                    setmessage(result.message);
+                    settitle('Error');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+                else {
+                    setmessage('Unknown Error! Please try again later.');
+                    settitle('Error');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+
+                }
+            })
+            .catch(error => {
+                setmessage('Unknown Error! Please try again later.');
+                settitle('Error');
+                setbutton('OK');
+                setModalVisible(!modalVisible)
+                console.log(result.message)
+                console.log('error', error)
+            });
     }
     return (
-        <View style={[styles.background, { padding: 20 }]}>
+        <ScrollView style={[styles.background, { padding: 20 }]}>
+            <Modal
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={[{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    // marginTop: 22
+                }]}>
+                    <View style={[{
+                        // margin: 20,
+                        backgroundColor: 'white',
+                        borderRadius: 8,
+                        padding: 20,
+                        alignItems: "center",
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2
+                        },
+                        width: '80%',
+                        shadowOpacity: 0.25,
+                        shadowRadius: 4,
+                        elevation: 5
+                    }]}>
+                        <Text style={[{ fontFamily: 'ubuntu-med', fontSize: 20 }]}>{title}</Text>
+                        <Text style={[{ fontFamily: 'ubuntu', fontSize: 15, marginTop: 20, marginBottom: 15 }]}>{message}</Text>
+                        <TouchableOpacity
+                            style={[{
+                                borderRadius: 8,
+                                padding: 10,
+                                width: 100,
+                                marginTop: 15,
+                                elevation: 2
+                            }]}
+                            onPress={() => setModalVisible(!modalVisible)}
+                        >
+                            <LinearGradient
+                                // Background Linear Gradient
+                                colors={['#130f40', '#000000']}
+                                style={[{
+                                    position: 'absolute',
+                                    left: 0,
+                                    // width: 47,
+                                    height: 40,
+                                    width: 100,
+                                    borderRadius: 8,
+                                    right: 0,
+                                }]}
+                            />
+                            <Text style={[{ color: 'white', fontFamily: 'ubuntu-med', fontSize: 17, textAlign: 'center' }]}>{button}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+            </Modal>
             <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
                 <View style={[{
                     position: 'absolute', width: '100%'
@@ -216,6 +415,7 @@ function SignUp({ navigation }) {
             </View>
             <View style={[{ padding: 20 }]}>
 
+
                 <Text style={[{ color: (name.length > 0 ? 'black' : 'transparent') }]}>Name </Text>
                 <TextInput placeholder='Name' keyboardType='default' placeholderTextColor='black' value={name} onChangeText={name => onChangeName(name)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
 
@@ -230,20 +430,24 @@ function SignUp({ navigation }) {
 
                 <Text style={[{ color: (cnfmpassword.length > 0 ? 'black' : 'transparent'), marginTop: 10 }]}>Confirm Password </Text>
                 <TextInput placeholder='Confirm Password' secureTextEntry={true} placeholderTextColor='black' value={cnfmpassword} onChangeText={cnfmpassword => onChangecnfmPassword(cnfmpassword)} style={[{ borderRadius: 2, borderBottomWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, fontFamily: 'ubuntu', height: 50 }]} />
+                <Text style={[{ color: 'red', marginLeft: 18, marginTop: (password == cnfmpassword ? -15 : 5) }]}>{(password == cnfmpassword) ? '' : '**Password and Confirm Password did not match'} </Text>
 
             </View>
             <View style={[{ padding: 40, marginTop: 20 }]}>
-                <TouchableOpacity onPress={() => {
-                    submitData()
+                <TouchableOpacity
+                    disabled={name.length > 0 ? (mobile.length == 10 ? (email.length > 0 ? (password.length > 0 ? (password == cnfmpassword ? false : true) : true) : true) : true) : true}
+                    onPress={() => {
 
-                    // save('password', password);
-                    // save('email', email);
-                    // save('email', email);
-                    // navigation.navigate('Home')
-                }} >
+                        submitData()
+
+                        // save('password', password);
+                        // save('email', email);
+                        // save('email', email);
+                        // navigation.navigate('Home')
+                    }} >
                     <LinearGradient
                         // Background Linear Gradient
-                        colors={['#130f40', '#000000']}
+                        colors={name.length > 0 ? (mobile.length == 10 ? (email.length > 0 ? (password.length > 0 ? (password == cnfmpassword ? ['#130f40', '#000000'] : ['gray', 'gray']) : ['gray', 'gray']) : ['gray', 'gray']) : ['gray', 'gray']) : ['gray', 'gray']}
                         style={[{
                             position: 'absolute',
                             left: 0,
@@ -260,7 +464,7 @@ function SignUp({ navigation }) {
 
             </View>
 
-        </View>
+        </ScrollView>
     );
 }
 
