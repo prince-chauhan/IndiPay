@@ -193,7 +193,7 @@ function sendEmail(email) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: '0xeblockpay@gmail.com',
+            user: '',
             pass: ''
         }
     });
