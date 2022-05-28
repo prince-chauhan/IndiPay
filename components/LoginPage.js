@@ -304,7 +304,7 @@ function SignUp({ navigation }) {
                 if (result.code == 200) {
                     setmessage(result.message);
                     settitle('Congratulations');
-                    setbutton('PROCEED');
+                    setbutton('OK');
                     setModalVisible(!modalVisible)
                     console.log(result.message)
 
@@ -334,6 +334,7 @@ function SignUp({ navigation }) {
                 console.log('error', error)
             });
     }
+    const Bold = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
     return (
         <ScrollView style={[styles.background, { padding: 20 }]}>
             <Modal
@@ -367,7 +368,7 @@ function SignUp({ navigation }) {
                         elevation: 5
                     }]}>
                         <Text style={[{ fontFamily: 'ubuntu-med', fontSize: 20 }]}>{title}</Text>
-                        <Text style={[{ fontFamily: 'ubuntu', fontSize: 15, marginTop: 20, marginBottom: 15 }]}>{message}</Text>
+                        <Text style={[{ fontFamily: 'ubuntu', fontSize: 15, marginTop: 20, marginBottom: 15, textAlign: 'center' }]}>{message}</Text>
                         <TouchableOpacity
                             style={[{
                                 borderRadius: 8,
