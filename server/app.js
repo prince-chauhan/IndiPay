@@ -121,6 +121,7 @@ app.post('/send-data', (req, res) => {
                     else {
                         const salt = csprng(160, 36);
                         req.body.password = hash(`${salt}${req.body.password}`);
+                        const otp = Math.floor(100000 + Math.random() * 900000);
                         const user = new User({
                             name: req.body.name,
                             email: req.body.email,
@@ -129,12 +130,12 @@ app.post('/send-data', (req, res) => {
                             pan: req.body.pan,
                             password: req.body.password,
                             aadhar: req.body.aadhar,
-                            salt
+                            salt,
+                            activated: false
                         })
                         console.log(req.body)
                         user.save()
                             .then(data => {
-                                console.log(data)
                                 res.send({ code: 200, message: `Account Created Successfully. \n\nPlease confirm your account using the link we have sent to your mail ${req.body.email.substring(0, 5)}xxxx${req.body.email.substring((req.body.email.indexOf('@') - 4), req.body.email.length)}.` })
                                 sendEmail(req.body.email)
                             }).catch(err => {
