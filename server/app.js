@@ -189,7 +189,7 @@ function hash(pwd) {
         .digest("base64");
 }
 
-function sendEmail(email) {
+function sendEmail(email, otp) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -197,7 +197,6 @@ function sendEmail(email) {
             pass: ''
         }
     });
-    var url = 'https://google.com';
     var mailOptions = {
         from: 'eBlockPay Team',
         to: email,
@@ -332,7 +331,7 @@ function sendEmail(email) {
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tbody><tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">We're excited to have you get started. First, you need to confirm your account. Just press the button below.</p>
+                                <p style="margin: 0;">We're excited to have you get started. First, you need to confirm your account. Use the OTP below to verify your mail.</p>
                             </td>
                         </tr>
                         <tr>
@@ -342,7 +341,7 @@ function sendEmail(email) {
                                         <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;">
                                             <table border="0" cellspacing="0" cellpadding="0">
                                                 <tbody><tr>
-                                                    <td align="center" style="border-radius: 8px;" bgcolor="#000000"><a href="${url}" target="_blank" style="font-size: 20px;font-family: Helvetica, Arial, sans-serif;color: #ffffff;text-decoration: none;color: #ffffff;text-decoration: none;padding: 15px 25px;border-radius: 8px;border: 1px solid #060606;display: inline-block;">Confirm Account</a></td>
+                                                    <td align="center" style="border-radius: 8px;" bgcolor="#000000"><a href="#" target="_blank" style="font-size: 20px;font-family: Helvetica, Arial, sans-serif;color: #ffffff;text-decoration: none;color: #ffffff;text-decoration: none;padding: 15px 25px;border-radius: 8px;border: 1px solid #060606;display: inline-block;">${otp}</a></td>
                                                 </tr>
                                             </tbody></table>
                                         </td>
@@ -352,14 +351,10 @@ function sendEmail(email) {
                         </tr> <!-- COPY -->
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 0px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser:</p>
+                                <p style="margin: 0;">If that doesn't work, try resending the OTP using IndiPay Mobile App</p>
                             </td>
                         </tr> <!-- COPY -->
-                        <tr>
-                            <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;"><a href="${url}" target="_blank" style="color: #000000;">${url}</a></p>
-                            </td>
-                        </tr>
+                        
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                                 <p style="margin: 0;">Cheers,<br>Team IndiPay</p>
