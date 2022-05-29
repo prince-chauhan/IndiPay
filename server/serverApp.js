@@ -181,7 +181,7 @@ app.post('/send-data', (req, res) => {
                                     var data = {
                                         email: req.body.email,
                                         userId: req.body.userId,
-                                        feature: req.body.feature
+                                        feature: feature
                                     }
                                     res.send({ otpId: sendOTP(data), code: 200, message: `Account Created Successfully. \n\nPlease enter the OTP below sent to your mail ${req.body.email.substring(0, 5)}xxxx${req.body.email.substring((req.body.email.indexOf('@') - 4), req.body.email.length)}.` })
 
@@ -240,11 +240,11 @@ app.post('/verify-otp', (req, res) => {
                                     .catch(err2 => {
                                         console.log(err2)
                                     })
-                                res.send({ code: 409, message: `Wrong OTP entered. Remaining attempts : ${data[0].attempts - 1}` })
+                                res.send({ code: 409, message: `Wrong OTP entered. ${(data[0].attempts - 1) > 0 ? 'Remaining attempts ' : 'Last attempt'} ${(data[0].attempts - 1) > 0 ? (data[0].attempts) : ''}` })
                             }
                         }
                         else {
-                            res.send({ code: 409, message: `Too many wrong attempts. Please try again after 10 minutes.` })
+                            res.send({ code: 429, message: `Too many wrong attempts. Please try again after 10 minutes.` })
                         }
                     }
                     else {

@@ -249,6 +249,7 @@ function SignUp({ navigation }) {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modalOtpVisible, setOtpModalVisible] = useState(false);
+    const [closeModal, setcloseModal] = useState(false);
     const [message, setmessage] = useState('Error');
     const [otpMessage, setotpMessage] = useState('');
     const [button, setbutton] = useState('OK');
@@ -288,6 +289,7 @@ function SignUp({ navigation }) {
             .then(response => response.json())
             .then(result => {
                 if (result.code == 200) {
+                    setotpMessage('');
                     setOtpModalVisible(!modalOtpVisible)
                     onChangeOtpId(result.otpId);
                     setmessage(result.message);
@@ -343,12 +345,12 @@ function SignUp({ navigation }) {
             .then(response => response.json())
             .then(result => {
                 if (result.code == 200) {
-                    setModalVisible(!modalVisible);
-                    modalOtpVisible ? setOtpModalVisible(!modalOtpVisible) : null
                     setmessage(result.message);
+                    setotpMessage('');
+                    setOtpModalVisible(!modalOtpVisible)
                     settitle('Congratulations');
-                    setbutton('OK');
-                    setModalVisible(!modalVisible)
+                    setbutton('Home');
+                    // setModalVisible(!modalVisible)
                     console.log(result.message)
 
                 }
@@ -364,6 +366,14 @@ function SignUp({ navigation }) {
                     // settitle('OTP Expired');
                     // setbutton('OK');
                     // setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+                else if (result.code == 429) {
+                    setotpMessage(result.message);
+                    // settitle('OTP Expired');
+                    // setbutton('OK');
+                    // setModalVisible(!modalVisible)
+                    setcloseModal(!closeModal)
                     console.log(result.message)
                 }
                 else {
@@ -433,8 +443,9 @@ function SignUp({ navigation }) {
                                 elevation: 2
                             }]}
                             onPress={() => {
-                                modalOtpVisible ? verifyOtp() : (setModalVisible(!modalVisible),
-                                    setOtpModalVisible(!modalOtpVisible))
+                                modalOtpVisible ? (closeModal ? (setModalVisible(!modalVisible), setOtpModalVisible(!modalOtpVisible), setotpMessage(''), onChangeOtp(''), setcloseModal(!closeModal)) : verifyOtp()) : (setModalVisible(!modalVisible)
+                                )
+
 
                             }}
 
