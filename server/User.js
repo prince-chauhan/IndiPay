@@ -23,7 +23,8 @@ const featureRequestOtp = new mongoose.Schema({
     attempts: String,
     otpId: String,
     userId: String,
-    utilized: Boolean
+    utilized: Boolean,
+    timestamp: String
 })
 
 mongoose.model('otpRequests', featureRequestOtp)

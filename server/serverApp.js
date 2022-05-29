@@ -6,7 +6,7 @@ require('dotenv').config()
 require('./User')
 const crypto = require("crypto");
 const User = mongoose.model('userInfo')
-const otpRequests = mongoose.model('otpRequests')
+const OtpRequests = mongoose.model('otpRequests')
 const csprng = require('csprng');
 const mongoUri = process.env.MONGO_URI;
 const nodemailer = require('nodemailer');
@@ -96,32 +96,31 @@ app.post('/login', (req, res) => {
         })
 })
 
-
-app.post('/otp-request', (req, res) => {
+function sendOTP(userId, feature, email) {
     const otp = Math.floor(100000 + Math.random() * 900000);
     const timestamp = new Date().getTime();
     const otpExpiry = new Date().getTime() + 600000;
-    const otpId = hash(`${otp}${timestamp}${req.body.userId}`);
+    const otpId = hash(`${otp}${timestamp}${userId}`);
     var date = new Date(otpExpiry);
     const expiryMsg = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
-    const otpRequests = new otpRequests({
+    const otpRequests = new OtpRequests({
         otp,
         otpExpiry,
-        feature: req.body.feature,
+        feature: feature,
         attempts: 3,
         otpId,
-        userId: req.body.userId,
-        utilized: false
+        userId: userId,
+        utilized: false,
+        timestamp
     })
     otpRequests.save()
         .then(data => {
-            res.send({ code: 200 })
-            sendEmail(req.body.email, otp, expiryMsg)
+            sendEmail(email, otp, expiryMsg)
+            return ({ code: 200 })
         }).catch(err => {
-            console.log(err)
+            return ({ code: 409 })
         })
-
-})
+}
 
 app.post('/send-data', (req, res) => {
     User.find({
@@ -146,6 +145,7 @@ app.post('/send-data', (req, res) => {
                     }
                     else {
                         const salt = csprng(160, 36);
+                        const feature = "Account Creation";
                         req.body.password = hash(`${salt}${req.body.password}`);
                         const userId = hash(`${salt}${req.body.email}`);
                         const user = new User({
@@ -163,8 +163,9 @@ app.post('/send-data', (req, res) => {
                         console.log(req.body)
                         user.save()
                             .then(data => {
-                                res.send({ code: 200, message: `Account Created Successfully. \n\nPlease confirm your account using the link we have sent to your mail ${req.body.email.substring(0, 5)}xxxx${req.body.email.substring((req.body.email.indexOf('@') - 4), req.body.email.length)}.` })
-                                sendEmail(req.body.email)
+                                sendOTP(userId, feature, req.body.email);
+                                res.send({ code: 200, message: `Account Created Successfully. \n\nPlease enter the OTP below we have sent to your mail ${req.body.email.substring(0, 5)}xxxx${req.body.email.substring((req.body.email.indexOf('@') - 4), req.body.email.length)}.` })
+
                             }).catch(err => {
                                 console.log(err)
                             })
@@ -221,8 +222,6 @@ function sendEmail(email, otp, expiryMsg) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: '',
-            pass: ''
         }
     });
     var mailOptions = {
@@ -379,7 +378,7 @@ function sendEmail(email, otp, expiryMsg) {
                         </tr> <!-- COPY -->
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 0px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">If that doesn't work, try resending the OTP using IndiPay Mobile App. Make sure to use it before ${expiryMsg}</p>
+                                <p style="margin: 0;">If that doesn't work, try resending the OTP using IndiPay Mobile App.<br> Make sure to use it before<b> ${expiryMsg}</b></p></p>
                             </td>
                         </tr> <!-- COPY -->
                         
