@@ -18,7 +18,7 @@ mongoose.model('userInfo', CreateAccountSchema)
 
 const featureRequestOtp = new mongoose.Schema({
     otp: String,
-    otpExpiry: TimeStamp,
+    otpExpiry: String,
     feature: String,
     attempts: String,
     otpId: String,
