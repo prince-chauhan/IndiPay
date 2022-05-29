@@ -10,7 +10,8 @@ const CreateAccountSchema = new mongoose.Schema({
     pan: String,
     aadhar: String,
     salt: String,
-    activated: Boolean
+    activated: Boolean,
+    timestamp: String
 })
 
 mongoose.model('userInfo', CreateAccountSchema)

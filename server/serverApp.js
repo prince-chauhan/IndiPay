@@ -96,31 +96,43 @@ app.post('/login', (req, res) => {
         })
 })
 
-function sendOTP(userId, feature, email) {
+var sendOTP = function (data) {
     const otp = Math.floor(100000 + Math.random() * 900000);
     const timestamp = new Date().getTime();
     const otpExpiry = new Date().getTime() + 600000;
-    const otpId = hash(`${otp}${timestamp}${userId}`);
+    const otpId = hash(`${otp}${timestamp}${data.userId}`);
     var date = new Date(otpExpiry);
     const expiryMsg = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
     const otpRequests = new OtpRequests({
         otp,
         otpExpiry,
-        feature: feature,
+        feature: data.feature,
         attempts: 3,
         otpId,
-        userId: userId,
+        userId: data.userId,
         utilized: false,
         timestamp
     })
+    const email = data.email
     otpRequests.save()
         .then(data => {
             sendEmail(email, otp, expiryMsg)
-            return ({ code: 200 })
+            // res.send({ code: 200, otpId })
         }).catch(err => {
-            return ({ code: 409 })
+            // res.send({ code: 409 })
         })
+    return otpId;
 }
+
+app.post('/otp-request', (req, res) => {
+    var data = {
+        email: req.body.email,
+        userId: req.body.userId,
+        feature: req.body.feature
+    }
+    res.send({ otpId: sendOTP(data) })
+
+});
 
 app.post('/send-data', (req, res) => {
     User.find({
@@ -133,51 +145,58 @@ app.post('/send-data', (req, res) => {
                     message: "You can\'t use this email address"
                 })
             }
-            User.find({
-                "phone": req.body.phone
-            })
-                .then(data => {
-                    if (data.length > 0) {
-                        res.send({
-                            code: 409,
-                            message: "You can\'t use this mobile number"
-                        })
-                    }
-                    else {
-                        const salt = csprng(160, 36);
-                        const feature = "Account Creation";
-                        req.body.password = hash(`${salt}${req.body.password}`);
-                        const userId = hash(`${salt}${req.body.email}`);
-                        const user = new User({
-                            userId,
-                            name: req.body.name,
-                            email: req.body.email,
-                            phone: req.body.phone,
-                            profilePic: req.body.profile_pic,
-                            pan: req.body.pan,
-                            password: req.body.password,
-                            aadhar: req.body.aadhar,
-                            salt,
-                            activated: false
-                        })
-                        console.log(req.body)
-                        user.save()
-                            .then(data => {
-                                sendOTP(userId, feature, req.body.email);
-                                res.send({ code: 200, message: `Account Created Successfully. \n\nPlease enter the OTP below we have sent to your mail ${req.body.email.substring(0, 5)}xxxx${req.body.email.substring((req.body.email.indexOf('@') - 4), req.body.email.length)}.` })
-
-                            }).catch(err => {
-                                console.log(err)
+            else {
+                User.find({
+                    "phone": req.body.phone
+                })
+                    .then(data => {
+                        if (data.length > 0) {
+                            res.send({
+                                code: 409,
+                                message: "You can\'t use this mobile number"
                             })
-                    }
-                })
-                .catch(err => {
-                    res.send(err)
-                })
+                        }
+                        else {
+                            const salt = csprng(160, 36);
+                            const feature = "Account Creation";
+                            req.body.password = hash(`${salt}${req.body.password}`);
+                            const userId = hash(`${salt}${req.body.email}`);
+                            const timestamp = new Date().getTime();
+                            const user = new User({
+                                userId,
+                                name: req.body.name,
+                                email: req.body.email,
+                                phone: req.body.phone,
+                                profilePic: req.body.profile_pic,
+                                pan: req.body.pan,
+                                password: req.body.password,
+                                aadhar: req.body.aadhar,
+                                salt,
+                                activated: false,
+                                timestamp
+                            })
+                            console.log(req.body)
+                            user.save()
+                                .then(data => {
+                                    var data = {
+                                        email: req.body.email,
+                                        userId: req.body.userId,
+                                        feature: req.body.feature
+                                    }
+                                    res.send({ otpId: sendOTP(data), code: 200, message: `Account Created Successfully. \n\nPlease enter the OTP below sent to your mail ${req.body.email.substring(0, 5)}xxxx${req.body.email.substring((req.body.email.indexOf('@') - 4), req.body.email.length)}.` })
 
+                                }).catch(err => {
+                                    console.log(err)
+                                })
+                        }
+                    })
+                    .catch(err2 => {
+                        res.send(err2)
+                    })
+            }
         })
-        .catch(err2 => {
-            res.send(err2)
+        .catch(err3 => {
+            res.send(err3)
         })
 
 })

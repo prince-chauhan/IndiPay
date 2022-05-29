@@ -1,29 +1,12 @@
 import React, { useRef, useState, useEffect, Component } from 'react';
-import { Alert, TouchableOpacity, Modal, BackHandler, Image, View, Text, ScrollView, StyleSheet } from 'react-native';
+import { Alert, TouchableOpacity, Modal, BackHandler, Image, View, Text, TextInput, ScrollView, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Link, NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
 import App from './Home';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { TextInput } from 'react-native-gesture-handler';
-
-
-const server = process.env.server;
-async function save(key, value) {
-    await SecureStore.setItemAsync(key, value);
-}
-
-async function getValueFor(key) {
-    let result = await SecureStore.getItemAsync(key);
-    if (result) {
-        return result
-    } else {
-        return null
-    }
-}
 
 
 function Login({ navigation }) {
@@ -272,7 +255,8 @@ function SignUp({ navigation }) {
     const [email, onChangeEmail] = React.useState('');
     const [name, onChangeName] = React.useState('');
     const [mobile, onChangeMobile] = React.useState('');
-    const [submit, setSubmit] = React.useState(0);
+    const [otp, onChangeOtp] = React.useState('');
+    const [otpId, onChangeOtpId] = React.useState('');
     const [password, onChangePassword] = React.useState('');
 
     const [cnfmpassword, onChangecnfmPassword] = React.useState('');
@@ -303,6 +287,8 @@ function SignUp({ navigation }) {
             .then(response => response.json())
             .then(result => {
                 if (result.code == 200) {
+                    setOtpModalVisible(!modalOtpVisible)
+                    onChangeOtpId(result.otpId);
                     setmessage(result.message);
                     settitle('Enter OTP');
                     setbutton('OK');
@@ -340,7 +326,7 @@ function SignUp({ navigation }) {
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
-            email,
+            otpId,
             otp
         });
 
@@ -356,6 +342,8 @@ function SignUp({ navigation }) {
             .then(response => response.json())
             .then(result => {
                 if (result.code == 200) {
+                    setModalVisible(!modalVisible);
+                    modalOtpVisible ? setOtpModalVisible(!modalOtpVisible) : null
                     setmessage(result.message);
                     settitle('Congratulations');
                     setbutton('OK');
@@ -396,6 +384,7 @@ function SignUp({ navigation }) {
                 visible={modalVisible}
                 onRequestClose={() => {
                     setModalVisible(!modalVisible);
+                    setOtpModalVisible(!modalOtpVisible);
                 }}
             >
                 <View style={[{
@@ -423,6 +412,9 @@ function SignUp({ navigation }) {
                     }]}>
                         <Text style={[{ fontFamily: 'ubuntu-med', fontSize: 20 }]}>{title}</Text>
                         <Text style={[{ fontFamily: 'ubuntu', fontSize: 15, marginTop: 20, marginBottom: 15, textAlign: 'center' }]}>{message}</Text>
+                        {modalOtpVisible ? <TextInput placeholder='OTP' keyboardType='number-pad' placeholderTextColor='black' value={otp} onChangeText={otp => onChangeOtp(otp)} maxLength={6} style={[{ borderRadius: 8, marginBottom: 20, marginTop: 10, width: 150, textAlign: 'center', borderWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, paddingRight: 10, fontFamily: 'ubuntu', height: 45 }]} /> : null}
+
+
                         <TouchableOpacity
                             style={[{
                                 borderRadius: 8,
@@ -431,7 +423,11 @@ function SignUp({ navigation }) {
                                 marginTop: 15,
                                 elevation: 2
                             }]}
-                            onPress={() => setModalVisible(!modalVisible)}
+                            onPress={() => {
+                                verifyOtp();
+                            }}
+                            disabled={otp.length == 6 ? false : true}
+
                         >
                             <LinearGradient
                                 // Background Linear Gradient
