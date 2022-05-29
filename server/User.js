@@ -21,7 +21,7 @@ const featureRequestOtp = new mongoose.Schema({
     otp: String,
     otpExpiry: String,
     feature: String,
-    attempts: String,
+    attempts: Number,
     otpId: String,
     userId: String,
     utilized: Boolean,

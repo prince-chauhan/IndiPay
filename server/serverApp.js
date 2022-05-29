@@ -212,6 +212,43 @@ app.post('/delete', (req, res) => {
         })
 })
 
+app.post('/verify-otp', (req, res) => {
+    OtpRequests.find({
+        otpId: req.body.otpId
+    })
+        .then(data => {
+            if (data.length > 0) {
+                const timestamp = new Date().getTime();
+                if (data.timestamp <= timestamp) {
+                    if (!data.utilized) {
+                        if (data.attempts > 0) {
+                            if (data.otp == req.body.otp) {
+                                res.send({ code: 200, message: `OTP verified successfully` })
+                                OtpRequests.findByIdAndUpdate(data._id, { utilized: true })
+                            }
+                            else {
+                                OtpRequests.findByIdAndUpdate(data._id, { attempts: data.attempts - 1 })
+                                res.send({ code: 409, message: `Wrong OTP entered` })
+                            }
+                        }
+                        else {
+                            res.send({ code: 409, message: `Too many wrong attempts. Please try again after 10 minutes.` })
+                        }
+                    }
+                    else {
+                        res.send({ code: 409, message: `You cannot use this OTP. Please generate a new OTP` })
+                    }
+                }
+                else {
+                    res.send({ code: 408, message: `OTP is expired. Please generate a new OTP using resend button` })
+                }
+            }
+        })
+        .catch(err => {
+
+        })
+})
+
 app.post('/update', (req, res) => {
     User.findByIdAndUpdate(req.body.id, {
         name: req.body.name,
