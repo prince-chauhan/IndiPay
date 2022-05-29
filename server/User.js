@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const CreateAccountSchema = new mongoose.Schema({
+    userId: String,
     name: String,
     email: String,
     phone: String,
@@ -12,7 +13,7 @@ const CreateAccountSchema = new mongoose.Schema({
     activated: Boolean
 })
 
-mongoose.model('createAccount', CreateAccountSchema)
+mongoose.model('userInfo', CreateAccountSchema)
 
 
 const featureRequestOtp = new mongoose.Schema({
@@ -24,4 +25,4 @@ const featureRequestOtp = new mongoose.Schema({
     userId: String
 })
 
-mongoose.model('createAccount', featureRequestOtp)
+mongoose.model('otpRequests', featureRequestOtp)

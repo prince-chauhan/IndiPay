@@ -265,6 +265,7 @@ function Login({ navigation }) {
 function SignUp({ navigation }) {
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalOtpVisible, setOtpModalVisible] = useState(false);
     const [message, setmessage] = useState('Error');
     const [button, setbutton] = useState('OK');
     const [title, settitle] = useState('Error');
@@ -299,6 +300,59 @@ function SignUp({ navigation }) {
         };
 
         fetch("http://43.204.71.211:3000/send-data", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.code == 200) {
+                    setmessage(result.message);
+                    settitle('Enter OTP');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+
+                }
+                else if (result.code == 409) {
+                    setmessage(result.message);
+                    settitle('Error');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+                else {
+                    setmessage('Unknown Error! Please try again later.');
+                    settitle('Error');
+                    setbutton('OK');
+                    setModalVisible(!modalVisible)
+                    console.log(result.message)
+
+                }
+            })
+            .catch(error => {
+                setmessage('Unknown Error! Please try again later.');
+                settitle('Error');
+                setbutton('OK');
+                setModalVisible(!modalVisible)
+                console.log(result.message)
+                console.log('error', error)
+            });
+    }
+    function verifyOtp() {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            email,
+            otp
+        });
+
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("http://43.204.71.211:3000/verifyOtp", requestOptions)
             .then(response => response.json())
             .then(result => {
                 if (result.code == 200) {
@@ -398,6 +452,9 @@ function SignUp({ navigation }) {
                 </View>
 
             </Modal>
+
+
+
             <View style={[{ marginTop: 2, marginTop: 50, flexDirection: 'row' }]}>
                 <View style={[{
                     position: 'absolute', width: '100%'

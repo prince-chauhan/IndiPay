@@ -5,7 +5,8 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 require('./User')
 const crypto = require("crypto");
-const User = mongoose.model('createAccount')
+const User = mongoose.model('userInfo')
+const otpRequests = mongoose.model('otpRequests')
 const csprng = require('csprng');
 const mongoUri = process.env.MONGO_URI;
 const nodemailer = require('nodemailer');
