@@ -97,6 +97,31 @@ app.post('/login', (req, res) => {
 })
 
 
+app.post('/otp-request', (req, res) => {
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const timestamp = new Date().getTime();
+    const otpExpiry = new Date().getTime() + 600000;
+    const otpId = hash(`${otp}${timestamp}${req.body.userId}`);
+    var date = new Date(otpExpiry);
+    const expiryMsg = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+    const otpRequests = new otpRequests({
+        otp,
+        otpExpiry,
+        feature: req.body.feature,
+        attempts: 3,
+        otpId,
+        userId: req.body.userId,
+        utilized: false
+    })
+    otpRequests.save()
+        .then(data => {
+            res.send({ code: 200 })
+            sendEmail(req.body.email, otp, expiryMsg)
+        }).catch(err => {
+            console.log(err)
+        })
+
+})
 
 app.post('/send-data', (req, res) => {
     User.find({
@@ -122,8 +147,9 @@ app.post('/send-data', (req, res) => {
                     else {
                         const salt = csprng(160, 36);
                         req.body.password = hash(`${salt}${req.body.password}`);
-                        const otp = Math.floor(100000 + Math.random() * 900000);
+                        const userId = hash(`${salt}${req.body.email}`);
                         const user = new User({
+                            userId,
                             name: req.body.name,
                             email: req.body.email,
                             phone: req.body.phone,
@@ -191,7 +217,7 @@ function hash(pwd) {
         .digest("base64");
 }
 
-function sendEmail(email, otp) {
+function sendEmail(email, otp, expiryMsg) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -202,7 +228,7 @@ function sendEmail(email, otp) {
     var mailOptions = {
         from: 'eBlockPay Team',
         to: email,
-        subject: 'Confirmation Mail',
+        subject: 'OTP Verification Mail',
         html: `<html><head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -322,7 +348,7 @@ function sendEmail(email, otp) {
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tbody><tr>
                             <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                                <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Welcome!</h1> <img src=" https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;">
+                                <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Confirmation OTP!</h1> <img src=" https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;">
                             </td>
                         </tr>
                     </tbody></table>
@@ -333,7 +359,7 @@ function sendEmail(email, otp) {
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tbody><tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">We're excited to have you get started. First, you need to confirm your account. Use the OTP below to verify your mail.</p>
+                                <p style="margin: 0;">We're excited to offer you our service. First, you need to confirm that its you. Use the OTP below to verify.</p>
                             </td>
                         </tr>
                         <tr>
@@ -353,7 +379,7 @@ function sendEmail(email, otp) {
                         </tr> <!-- COPY -->
                         <tr>
                             <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 0px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                                <p style="margin: 0;">If that doesn't work, try resending the OTP using IndiPay Mobile App</p>
+                                <p style="margin: 0;">If that doesn't work, try resending the OTP using IndiPay Mobile App. Make sure to use it before ${expiryMsg}</p>
                             </td>
                         </tr> <!-- COPY -->
                         
