@@ -158,7 +158,7 @@ app.post('/send-data', (req, res) => {
                         }
                         else {
                             const salt = csprng(160, 36);
-                            const feature = "Account Creation";
+                            const feature = "1111";
                             req.body.password = hash(`${salt}${req.body.password}`);
                             const userId = hash(`${salt}${req.body.email}`);
                             const timestamp = new Date().getTime();
@@ -219,16 +219,28 @@ app.post('/verify-otp', (req, res) => {
         .then(data => {
             if (data.length > 0) {
                 const timestamp = new Date().getTime();
-                if (data.timestamp <= timestamp) {
-                    if (!data.utilized) {
-                        if (data.attempts > 0) {
-                            if (data.otp == req.body.otp) {
+                if (data[0].otpExpiry >= timestamp) {
+                    if (data[0].utilized != true) {
+                        if (data[0].attempts > 0) {
+                            if (data[0].otp == req.body.otp) {
+                                OtpRequests.findByIdAndUpdate(data[0].id, { utilized: true })
+                                    .then(data => {
+                                        console.log(data)
+                                    })
+                                    .catch(err3 => {
+                                        console.log(err3)
+                                    })
                                 res.send({ code: 200, message: `OTP verified successfully` })
-                                OtpRequests.findByIdAndUpdate(data._id, { utilized: true })
                             }
                             else {
-                                OtpRequests.findByIdAndUpdate(data._id, { attempts: data.attempts - 1 })
-                                res.send({ code: 409, message: `Wrong OTP entered` })
+                                OtpRequests.findByIdAndUpdate(data[0].id, { attempts: data[0].attempts - 1 })
+                                    .then(data => {
+                                        console.log(data)
+                                    })
+                                    .catch(err2 => {
+                                        console.log(err2)
+                                    })
+                                res.send({ code: 409, message: `Wrong OTP entered. Remaining attempts : ${data[0].attempts - 1}` })
                             }
                         }
                         else {

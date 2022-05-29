@@ -250,6 +250,7 @@ function SignUp({ navigation }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalOtpVisible, setOtpModalVisible] = useState(false);
     const [message, setmessage] = useState('Error');
+    const [otpMessage, setotpMessage] = useState('');
     const [button, setbutton] = useState('OK');
     const [title, settitle] = useState('Error');
     const [email, onChangeEmail] = React.useState('');
@@ -338,7 +339,7 @@ function SignUp({ navigation }) {
             redirect: 'follow'
         };
 
-        fetch("http://43.204.71.211:3000/verifyOtp", requestOptions)
+        fetch("http://43.204.71.211:3000/verify-otp", requestOptions)
             .then(response => response.json())
             .then(result => {
                 if (result.code == 200) {
@@ -352,26 +353,33 @@ function SignUp({ navigation }) {
 
                 }
                 else if (result.code == 409) {
-                    setmessage(result.message);
-                    settitle('Error');
-                    setbutton('OK');
-                    setModalVisible(!modalVisible)
+                    setotpMessage(result.message);
+                    // settitle('Error');
+                    // setbutton('OK');
+                    // setModalVisible(!modalVisible)
+                    console.log(result.message)
+                }
+                else if (result.code == 408) {
+                    setotpMessage(result.message);
+                    // settitle('OTP Expired');
+                    // setbutton('OK');
+                    // setModalVisible(!modalVisible)
                     console.log(result.message)
                 }
                 else {
-                    setmessage('Unknown Error! Please try again later.');
-                    settitle('Error');
-                    setbutton('OK');
-                    setModalVisible(!modalVisible)
+                    setotpMessage('Unknown Error! Please try again later.');
+                    // settitle('Error');
+                    // setbutton('OK');
+                    // setModalVisible(!modalVisible)
                     console.log(result.message)
 
                 }
             })
             .catch(error => {
-                setmessage('Unknown Error! Please try again later.');
-                settitle('Error');
-                setbutton('OK');
-                setModalVisible(!modalVisible)
+                setotpMessage('Unknown Error! Please try again later.');
+                // settitle('Error');
+                // setbutton('OK');
+                // setModalVisible(!modalVisible)
                 console.log(result.message)
                 console.log('error', error)
             });
@@ -413,6 +421,7 @@ function SignUp({ navigation }) {
                         <Text style={[{ fontFamily: 'ubuntu-med', fontSize: 20 }]}>{title}</Text>
                         <Text style={[{ fontFamily: 'ubuntu', fontSize: 15, marginTop: 20, marginBottom: 15, textAlign: 'center' }]}>{message}</Text>
                         {modalOtpVisible ? <TextInput placeholder='OTP' keyboardType='number-pad' placeholderTextColor='black' value={otp} onChangeText={otp => onChangeOtp(otp)} maxLength={6} style={[{ borderRadius: 8, marginBottom: 20, marginTop: 10, width: 150, textAlign: 'center', borderWidth: 1, borderColor: 'black', color: 'black', fontSize: 20, paddingLeft: 10, paddingRight: 10, fontFamily: 'ubuntu', height: 45 }]} /> : null}
+                        {otpMessage.length > 0 ? <Text style={[{ color: 'red', marginLeft: 10, marginTop: 5 }]}>{otpMessage}</Text> : null}
 
 
                         <TouchableOpacity
@@ -424,9 +433,12 @@ function SignUp({ navigation }) {
                                 elevation: 2
                             }]}
                             onPress={() => {
-                                verifyOtp();
+                                modalOtpVisible ? verifyOtp() : (setModalVisible(!modalVisible),
+                                    setOtpModalVisible(!modalOtpVisible))
+
                             }}
-                            disabled={otp.length == 6 ? false : true}
+
+                            disabled={modalOtpVisible ? (otp.length == 6 ? false : true) : false}
 
                         >
                             <LinearGradient
