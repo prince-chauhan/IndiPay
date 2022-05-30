@@ -2,15 +2,19 @@
 import React from 'react';
 import LoginApp from './components/LoginPage';
 
-import { createStore } from 'redux';
+import { configureStore } from 'redux';
 import { Provider } from 'react-redux';
+import { reducer } from './reducers/reducer';
+
+const store = configureStore(reducer)
 
 
-const store = createStore()
 
 export default function App() {
   return (
-    <LoginApp></LoginApp>
+    <Provider store={store}>
+      <LoginApp></LoginApp>
+    </Provider>
   );
 }
 

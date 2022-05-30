@@ -7,10 +7,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
 import App from './Home';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSelector, useDispatch } from 'react-redux'
 
 
 function Login({ navigation }) {
 
+    const data = useSelector((state) => {
+        return state.data
+    })
     const backAction = () => {
         Alert.alert("Hold on!", "Are you sure you want to exit?", [
             {
