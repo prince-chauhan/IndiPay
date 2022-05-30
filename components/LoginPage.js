@@ -443,7 +443,8 @@ function SignUp({ navigation }) {
                                 elevation: 2
                             }]}
                             onPress={() => {
-                                modalOtpVisible ? (closeModal ? (setModalVisible(!modalVisible), setOtpModalVisible(!modalOtpVisible), setotpMessage(''), onChangeOtp(''), setcloseModal(!closeModal)) : verifyOtp()) : (setModalVisible(!modalVisible)
+                                modalOtpVisible ? (closeModal ? (setModalVisible(!modalVisible), setOtpModalVisible(!modalOtpVisible), setotpMessage(''), onChangeOtp(''), setcloseModal(!closeModal)) : verifyOtp()) : (setModalVisible(!modalVisible),
+                                    navigation.navigate('Home')
                                 )
 
 
