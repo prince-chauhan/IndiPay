@@ -2,11 +2,11 @@
 import React from 'react';
 import LoginApp from './components/LoginPage';
 
-import { configureStore } from 'redux';
+import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { reducer } from './reducers/reducer';
 
-const store = configureStore(reducer)
+const store = createStore(reducer)
 
 
 
